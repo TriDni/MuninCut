@@ -2,6 +2,7 @@ MuninCut
 ========
 
 This script allows to delete some time period on Munin's Graph. 
+French documentation : http://triden.org/index.php/Munin_-_muninCut
 
 ##Requirements
 
