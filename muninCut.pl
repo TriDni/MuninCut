@@ -167,6 +167,7 @@ sub objIdControl {
 		foreach my $metric (@obj) {
 			if (${$metric}{id} eq $id) {
 				$check = 1;
+				last;
 			} else {
 				$check = 0;
 				}
