@@ -1,20 +1,28 @@
 #!/usr/bin/perl
 
 # License
-#   GPLv2 (http://www.gnu.org/licenses/gpl-2.0.txt)
+# GPLv2 (http://www.gnu.org/licenses/gpl-2.0.txt)
 # Authors
-#   DENNI Tristan
+# DENNI Tristan
+#
+# Version Note
+#
+# Add syslog functionnality
+# Resolve some bugs (permissions problems, metric ID control bugs)
 
 use strict;
+use warnings;
 use Term::Pager;
 use Term::ReadKey;
 use HTTP::Date;
+use Sys::Syslog qw( :DEFAULT setlogsock);
 
 my $syncPath = "/var/lib/munin/";
 my (%component, %resource);
 
 system("clear");
 
+print "/!\\ IMPORTANT /!\\\nNote that you have to execute this script with some user that can edit, chmod and chown on /var/lib/munin/\n\n";
 print "\nWorking On Munin's Datafile, please wait few seconds ...\n\n";
 $syncPath = addEndSlash($syncPath);
 my $rrdObj = buildRrdObj($syncPath);
@@ -132,6 +140,7 @@ if ($endTimestamp && $beginTimestamp &&($endTimestamp < $beginTimestamp)) { prin
 
 if (-e "/tmp/temp.xml") { unlink "/tmp/temp.xml"; }
     `rrdtool dump $path>/tmp/temp.xml`;
+    print "\n\n[1/6] Dump RRD file";
     open(TMP, "/tmp/temp.xml");
     open(XML, ">/tmp/tmprrd.xml");
 
@@ -145,12 +154,23 @@ if (-e "/tmp/temp.xml") { unlink "/tmp/temp.xml"; }
 			}
 		print XML $line;
 		}
+    print "\n\n[2/6] Build new RRD";
     unlink "/tmp/temp.xml";
+    print "\n\n[3/6] Delete Dump";
     close(TMP);
     close(XML);
     unlink $path;
     `rrdtool restore /tmp/tmprrd.xml $path`;
+    print "\n\n[4/6] Restore RRD";
+    system("chmod 664 ".$path);
+    system("chown munin:munin ".$path);
+    print "\n\n[5/6] CHMOD and CHOWN new RRD";
     unlink "/tmp/tmprrd.xml";
+    
+    setlogsock('unix');
+    openlog('muninCut', '', 'user');
+    syslog('info', "cutting RRD|Begin:$beginDate($beginTimestamp)|End:$endDate($endTimestamp)|Path:$path");
+    print "\n\n[6/6] Writing Syslog (muninCut)\n";
 
 sub dateControl { 
 	my ($date) = @_;
