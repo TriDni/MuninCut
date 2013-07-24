@@ -77,3 +77,5 @@ And last, select the time period which will be setted to NaN :
 
     Please set begin date (format : 'yyyy-MM-dd hh:mm:ss') : 2013-05-21 00:00:00
     Please set end date (format : 'yyyy-MM-dd hh:mm:ss') : 2013-05-21 10:00:00
+
+Note : Changes will appear on next munin-update / munin-graph.
