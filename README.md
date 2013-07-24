@@ -17,6 +17,8 @@ Just launch muninCut.pl with a user which has rights to modify /var/lib/munin/.
 
     ./muninCut.pl
     
+Important : Note that you have to execute this script with some user that can edit, chmod and chown on /var/lib/munin/.
+    
 ##Steps
 
 Script load Munin's parameters : 
@@ -79,5 +81,18 @@ And last, select the time period which will be setted to NaN :
 
     Please set begin date (format : 'yyyy-MM-dd hh:mm:ss') : 2013-05-21 00:00:00
     Please set end date (format : 'yyyy-MM-dd hh:mm:ss') : 2013-05-21 10:00:00
+    
+And the result : 
+
+    [1/6] Dump RRD file
+    [2/6] Build new RRD
+    [3/6] Delete Dump
+    [4/6] Restore RRD
+    [5/6] CHMOD and CHOWN new RRD
+    [6/6] Writing Syslog (muninCut)
 
 Note : Changes will appear on next munin-update / munin-graph.
+
+All changes will be added to your syslog.
+
+    grep muninCut /var/log/syslog*
